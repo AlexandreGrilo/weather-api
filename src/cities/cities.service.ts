@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateCityDto } from './dto/create-cities.dto';
+import { CityWithWeatherDto, CreateCityDto } from './cities.dto';
 import axios from 'axios';
 
 interface OpenWeatherResponse {
@@ -60,5 +60,27 @@ export class CitiesService {
     });
 
     return city;
+  }
+
+  async findAll(): Promise<CityWithWeatherDto[]> {
+    const cities = await this.prisma.city.findMany({
+      include: {
+        weather: {
+          orderBy: { recordedAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    return cities.map((city) => ({
+      id: city.id,
+      name: city.name,
+      weather: city.weather[0]
+        ? {
+            temp: city.weather[0].temp,
+            summary: city.weather[0].summary,
+          }
+        : null,
+    }));
   }
 }

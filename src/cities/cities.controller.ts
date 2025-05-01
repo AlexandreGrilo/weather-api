@@ -1,10 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { CitiesService } from './cities.service';
-import { CreateCityDto } from './dto/create-cities.dto';
+import { CityWithWeatherDto, CreateCityDto } from './cities.dto';
 import {
   ApiTags,
   ApiCreatedResponse,
   ApiConflictResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('cities')
@@ -17,5 +18,11 @@ export class CitiesController {
   @ApiConflictResponse({ description: 'City already exists' })
   create(@Body() dto: CreateCityDto) {
     return this.citiesService.create(dto);
+  }
+
+  @Get()
+  @ApiOkResponse({ type: [CityWithWeatherDto] })
+  findAll(): Promise<CityWithWeatherDto[]> {
+    return this.citiesService.findAll();
   }
 }
