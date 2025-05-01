@@ -13,7 +13,6 @@ class WeatherDto {
   temp!: number;
 
   @ApiProperty()
-  @IsString()
   summary!: string;
 }
 
@@ -22,8 +21,32 @@ export class CityWithWeatherDto {
   id!: number;
 
   @ApiProperty()
+  @IsString()
   name!: string;
 
   @ApiPropertyOptional({ type: WeatherDto })
   weather!: WeatherDto | null;
+}
+
+class LatestWeatherDto {
+  @ApiProperty()
+  @IsNumber()
+  temp!: number;
+
+  @ApiProperty()
+  summary!: string;
+
+  @ApiProperty()
+  recordedAt!: Date;
+}
+
+export class CityWeatherResponseDto {
+  @ApiProperty()
+  id!: number;
+
+  @ApiProperty()
+  name!: string;
+
+  @ApiProperty({ type: LatestWeatherDto, nullable: true })
+  latestWeather!: LatestWeatherDto | null;
 }

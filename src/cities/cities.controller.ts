@@ -1,6 +1,10 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { CitiesService } from './cities.service';
-import { CityWithWeatherDto, CreateCityDto } from './cities.dto';
+import {
+  CityWeatherResponseDto,
+  CityWithWeatherDto,
+  CreateCityDto,
+} from './cities.dto';
 import {
   ApiTags,
   ApiCreatedResponse,
@@ -24,5 +28,11 @@ export class CitiesController {
   @ApiOkResponse({ type: [CityWithWeatherDto] })
   findAll(): Promise<CityWithWeatherDto[]> {
     return this.citiesService.findAll();
+  }
+
+  @Get('weather')
+  @ApiOkResponse({ type: [CityWeatherResponseDto] })
+  async getCitiesWithWeather(): Promise<CityWeatherResponseDto[]> {
+    return this.citiesService.findAllWithLatestWeather();
   }
 }
