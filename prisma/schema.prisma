@@ -15,7 +15,7 @@ model City {
 
 model WeatherData {
   id        Int      @id @default(autoincrement())
-  city      City     @relation(fields: [cityId], references: [id])
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
   cityId    Int
   temp      Float
   summary   String

@@ -110,4 +110,10 @@ export class CitiesService {
         : null,
     }));
   }
+
+  async remove(id: number) {
+    return this.prisma.city.delete({
+      where: { id },
+    });
+  }
 }

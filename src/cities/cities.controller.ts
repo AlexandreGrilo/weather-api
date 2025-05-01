@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Delete,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CitiesService } from './cities.service';
 import {
   CityWeatherResponseDto,
@@ -34,5 +43,11 @@ export class CitiesController {
   @ApiOkResponse({ type: [CityWeatherResponseDto] })
   async getCitiesWithWeather(): Promise<CityWeatherResponseDto[]> {
     return this.citiesService.findAllWithLatestWeather();
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.citiesService.remove(id);
   }
 }
