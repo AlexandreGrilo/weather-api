@@ -1,45 +1,35 @@
-# Weather API
+# 🌦️ Weather API (NestJS)
 
-A NestJS-based API that provides weather data for cities. The API allows for creating cities, storing weather data, and fetching current and historical weather information for cities.
+A simple Weather API built with **NestJS**, **TypeScript**, **Prisma**, and **PostgreSQL**, integrating the **OpenWeatherMap API** and using **@nestjs/schedule** for recurring weather data collection.
 
-## Features
+## 🚀 Features
 
-- Create cities and store weather data for them.
-- Retrieve the latest weather data for all cities.
-- Retrieve all historical weather data for all cities.
-- Retrieve the weather history for a specific city from the last two days.
-- Automatic weather data fetching using cron jobs.
+- Add and remove cities
+- Fetch current and historical weather data (last 48h)
+- Automatic periodic weather fetching (cron job)
+- Swagger API docs (`/api`)
+- DTOs with validation and API metadata
+- Modular, clean architecture with services and scheduling
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **NestJS**: Web framework for building APIs.
-- **Prisma**: ORM for database access (PostgreSQL).
-- **Swagger**: API documentation.
-- **OpenWeatherMap API**: Fetch weather data.
+- [NestJS](https://nestjs.com/)
+- [Prisma ORM](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Swagger](https://swagger.io/)
+- [OpenWeatherMap API](https://openweathermap.org/api)
+- [Docker](https://www.docker.com/)
+- [@nestjs/schedule](https://docs.nestjs.com/techniques/task-scheduling)
 
-## Requirements
-
-- Node.js v20+ (for compatibility with `crypto` and other dependencies)
-- PostgreSQL database
-- OpenWeatherMap API Key
-
-## Setup
-
-### 1. Clone the repository
+## 📦 Installation
 
 ```bash
-git clone <repository_url>
-cd <project_folder>
-```
-
-### 2. Install dependencies
-
-```bash
+git clone https://github.com/AlexandreGrilo/weather-api.git
+cd weather-api
 npm install
 ```
 
-### 3. Setup environment variables
-Create a `.env` file in the root of the project and add the following:
+### Create a `.env` file in the root of the project and add the following:
 
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/weatherdb
@@ -48,46 +38,56 @@ POSTGRES_USER=database_username
 POSTGRES_PASSWORD=database_user_password
 OPENWEATHER_API_KEY=your_openweathermap_api_key
 ```
+### Run with Docker:
 
-### 4. Build and run the Docker container
 ```bash
-docker compose up --build
+docker-compose up --build
+docker compose exec app npx prisma migrate dev
 ```
 
-### 5. Run the database migrations inside Docker
+### Run locally (without Docker):
+
 ```bash
-docker compose exec app npx prisma migrate dev --name <migration-name>
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run start:dev
 ```
 
-### 6. Swagger API Documentation
-Once the server is running, you can access the API documentation at:
+## 🧪 Endpoints
+Once running, access Swagger docs at:
 
-```bash
 http://localhost:3000/api
-```
 
-## API Endpoints
+### Some endpoints:
 
-### POST /cities
+* POST /cities – Add a city with the latest weather data
 
-Create a city with the latest weather.
+* GET /cities – List all cities and all weather history
 
+* GET /cities/weather – All cities with latest weather
 
-### GET /cities
+* GET /cities/:name/weather – Weather history of a city
 
-Get all cities with the latest weather saved in the database.
-
-
-### GET /cities/weather
-
-Get all cities with all the weather data saved in the database.
+* DELETE /cities/:id – Delete a city and all it's weather data
 
 
-### GET /cities/:name/weather
+## 🗓️ Cron Job
 
-Get the last 2 days of weather data for a specific city
+Weather data is fetched every hour and stored in the database automatically.
 
 
-### DELETE /cities/:id
+## ✅ Todo / Extras (for future improvements)
 
-Delete a city by ID.
+* Redis cache layer for weather
+
+* Circuit breaker and retry logic for API resilience
+
+* End-to-end and load tests
+
+
+## 👨‍💻 Author
+
+Alexandre Vaz
+
+[github.com/AlexandreGrilo](https://github.com/AlexandreGrilo)
