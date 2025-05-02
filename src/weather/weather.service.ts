@@ -31,7 +31,7 @@ export class WeatherService {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         throw new NotFoundException('City not found in OpenWeatherMap');
       }
-      throw error; // rethrow other errors (e.g., network issues)
+      throw error;
     }
   }
 }
