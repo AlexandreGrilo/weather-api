@@ -22,6 +22,7 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
 
 @ApiTags('cities')
@@ -31,7 +32,10 @@ export class CitiesController {
 
   @Post()
   @ApiBody({ type: CreateCityDto })
-  @ApiCreatedResponse({ description: 'City created successfully' })
+  @ApiCreatedResponse({
+    type: CityWithWeatherDto,
+    description: 'City created successfully',
+  })
   @ApiConflictResponse({ description: 'City already exists' })
   create(@Body() dto: CreateCityDto) {
     return this.citiesService.createCity(dto);
@@ -50,14 +54,23 @@ export class CitiesController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID of the city to delete',
+  })
   @HttpCode(204)
-  @ApiOkResponse({ description: 'City deleted successfully' })
   @ApiNotFoundResponse({ description: 'City not found' })
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.citiesService.delete(id);
   }
 
   @Get(':name/weather')
+  @ApiParam({
+    name: 'name',
+    type: String,
+    description: 'City name to fetch weather history',
+  })
   @ApiOkResponse({ type: CityWeatherHistoryDto })
   @ApiNotFoundResponse({
     description: 'City not found and no weather data available',
