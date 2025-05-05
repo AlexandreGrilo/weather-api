@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { CitiesService } from './cities.service';
 import {
+  CityDto,
   CityWeatherHistoryDto,
-  CityWeatherResponseDto,
-  CityWithWeatherDto,
+  CityWeatherDto,
   CreateCityDto,
 } from './cities.dto';
 import {
@@ -23,37 +23,56 @@ import {
   ApiNotFoundResponse,
   ApiBody,
   ApiParam,
+  ApiExtraModels,
+  ApiOperation,
 } from '@nestjs/swagger';
 
+@ApiExtraModels(CityDto)
 @ApiTags('cities')
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
   @Post()
-  @ApiBody({ type: CreateCityDto })
+  @ApiOperation({
+    summary: 'Create a city',
+  })
+  @ApiBody({
+    required: true,
+    type: CreateCityDto,
+    description: 'City name to be created',
+  })
   @ApiCreatedResponse({
-    type: CityWithWeatherDto,
+    type: CityWeatherDto,
     description: 'City created successfully',
   })
   @ApiConflictResponse({ description: 'City already exists' })
-  create(@Body() dto: CreateCityDto) {
-    return this.citiesService.createCity(dto);
+  create(@Body() createCityDto: CreateCityDto) {
+    return this.citiesService.createCityWithWeather(createCityDto);
   }
 
   @Get()
-  @ApiOkResponse({ type: [CityWithWeatherDto] })
-  findAll(): Promise<CityWithWeatherDto[]> {
-    return this.citiesService.getAllCities();
+  @ApiOperation({
+    summary: 'Get all the cities and its latest weather.',
+  })
+  @ApiOkResponse({ type: [CityWeatherDto] })
+  getCitiesLatestWeather(): Promise<CityWeatherDto[]> {
+    return this.citiesService.getAllCitiesWithLatestWeather();
   }
 
   @Get('weather')
-  @ApiOkResponse({ type: [CityWeatherResponseDto] })
-  async getCitiesWithWeather(): Promise<CityWeatherResponseDto[]> {
-    return this.citiesService.getAllWeather();
+  @ApiOperation({
+    summary: 'Get all the cities and its weather history.',
+  })
+  @ApiOkResponse({ type: [CityWeatherHistoryDto] })
+  async getCitiesWeatherHistory(): Promise<CityWeatherHistoryDto[]> {
+    return this.citiesService.getAllCitiesWithWeatherHistory();
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete a city and its weather history.',
+  })
   @ApiParam({
     name: 'id',
     type: Number,
@@ -62,10 +81,13 @@ export class CitiesController {
   @HttpCode(204)
   @ApiNotFoundResponse({ description: 'City not found' })
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.citiesService.delete(id);
+    return this.citiesService.deleteCityAndWeatherHistory(id);
   }
 
   @Get(':name/weather')
+  @ApiOperation({
+    summary: 'Get a city by the name with last 2 days weather history.',
+  })
   @ApiParam({
     name: 'name',
     type: String,
@@ -76,6 +98,6 @@ export class CitiesController {
     description: 'City not found and no weather data available',
   })
   getCityWeather(@Param('name') name: string): Promise<CityWeatherHistoryDto> {
-    return this.citiesService.getCityWeatherHistory(name);
+    return this.citiesService.getCityWithWeatherHistory(name);
   }
 }
